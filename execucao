@@ -1,0 +1,25 @@
+python3 main.py --jobs=512 --machines=16 --path=512x16/u_s_hilo.0,512x16/u_s_hihi.0,512x16/u_s_lohi.0,512x16/u_s_lolo.0 --numInd=100,200 --numGen=100,200 --toMatrix=0.3 --elitism=10
+
+python3 mainAG.py --jobs=512 --machines=16 --path=512x16/u_c_hihi.0 --numInd=100 --numGen=100 --toMatrix=0.3 --elitism=10 --mutation=5
+
+
+python mainAG.py --jobs=512 --machines=16 --path=512x16/u_s_hilo.0,512x16/u_s_hihi.0,512x16/u_s_lohi.0,512x16/u_s_lolo.0,512x16/u_i_hilo.0,512x16/u_i_hihi.0,512x16/u_i_lohi.0,512x16/u_i_lolo.0,512x16/u_c_hilo.0,512x16/u_c_hihi.0,512x16/u_c_lohi.0,512x16/u_c_lolo.0, --numInd=100 --numGen=100 --toMatrix=0.3 --elitism=10 --mutation=0,10,20,30
+
+python main.py --jobs=512 --machines=16 --path=512x16/u_s_hilo.0,512x16/u_s_hihi.0,512x16/u_s_lohi.0,512x16/u_s_lolo.0,512x16/u_i_hilo.0,512x16/u_i_hihi.0,512x16/u_i_lohi.0,512x16/u_i_lolo.0,512x16/u_c_hilo.0,512x16/u_c_hihi.0,512x16/u_c_lohi.0,512x16/u_c_lolo.0 --numInd=100 --numGen=100 --toMatrix=0.3 --elitism=10 --mutation=0,10,20,30
+python main.py --jobs=512 --machines=16 --path=512x16/u_s_hilo.0,512x16/u_s_hihi.0,512x16/u_s_lohi.0,512x16/u_s_lolo.0,512x16/u_i_hilo.0,512x16/u_i_hihi.0,512x16/u_i_lohi.0,512x16/u_i_lolo.0,512x16/u_c_hilo.0,512x16/u_c_hihi.0,512x16/u_c_lohi.0,512x16/u_c_lolo.0 --numInd=100,200 --numGen=100,200 --toMatrix=0.3,0.5 --elitism=10,20,30 --mutation=0,10,20,30
+
+python main.py --jobs=512 --machines=16 --path=512x16/u_c_hilo.0,512x16/u_c_hihi.0,512x16/u_c_lohi.0,512x16/u_c_lolo.0 --numInd=100 --numGen=100 --toMatrix=0.3,0.5 --elitism=10,20,30 --mutation=0
+
+
+python main.py --jobs=512 --machines=16 --path=512x16/u_s_hilo.0,512x16/u_s_hihi.0,512x16/u_s_lohi.0,512x16/u_s_lolo.0,512x16/u_i_hilo.0,512x16/u_i_hihi.0,512x16/u_i_lohi.0,512x16/u_i_lolo.0,512x16/u_c_hilo.0,512x16/u_c_hihi.0,512x16/u_c_lohi.0,512x16/u_c_lolo.0 --numInd=100 --numGen=100 --toMatrix=0.3 --elitism=10 --mutation=0
+
+python main.py --jobs=512 --machines=16 --path=512x16/u_s_hilo.0,512x16/u_s_hihi.0,512x16/u_s_lohi.0,512x16/u_s_lolo.0 --numInd=100 --numGen=100 --toMatrix=0.3,0.5 --elitism=10,20,30 --mutation=0,10,20,30
+python main.py --jobs=512 --machines=16 --path=512x16/u_i_hilo.0,512x16/u_i_hihi.0,512x16/u_i_lohi.0,512x16/u_i_lolo.0 --numInd=100 --numGen=100 --toMatrix=0.3,0.5 --elitism=10,20,30 --mutation=0,10,20,30
+python main.py --jobs=512 --machines=16 --path=512x16/u_c_hilo.0,512x16/u_c_hihi.0,512x16/u_c_lohi.0,512x16/u_c_lolo.0 --numInd=100 --numGen=100 --toMatrix=0.3,0.5 --elitism=10,20,30 --mutation=0,10,20,30
+
+
+python main.py --jobs=1024 --machines=32 --path=1024x32/A.u_c_hihi --numInd=100 --numGen=100 --toMatrix=0.3,0.5 --elitism=10,20,30 --mutation=0,10,20,30
+
+
+
+python main.py --jobs=512 --machines=16 --path=512x16/u_s_hilo.0,512x16/u_s_hihi.0,512x16/u_s_lohi.0,512x16/u_s_lolo.0,512x16/u_i_hilo.0,512x16/u_i_hihi.0,512x16/u_i_lohi.0,512x16/u_i_lolo.0,512x16/u_c_hilo.0,512x16/u_c_hihi.0,512x16/u_c_lohi.0,512x16/u_c_lolo.0 --numInd=100 --numGen=100 --toMatrix=0.3,0.5 --elitism=10,20,30 --mutation=0,10,20,30
