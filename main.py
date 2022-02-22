@@ -5,7 +5,9 @@ import numpy as np
 from numba import jit
 from utils import get_initial_pop, get_big_pop, mutate, get_fitness, order_pop
 from utils import create_prob_matrix, fill_prob_matrix, create_new_pop, add_heuristics
-from utils import save_to_csv, variable_neighborhood_search
+from utils import save_to_csv, variable_neighborhood_search, create_new_pop_parallel
+from joblib import Parallel, delayed
+
 
 
 parser=argparse.ArgumentParser()
@@ -82,7 +84,8 @@ for j in jobs:
                                     
                                     fst_pop = fst_pop[:e]
                                     
-                                    new_pop = create_new_pop(pb, ni - len(fst_pop))
+                                    #new_pop = create_new_pop(pb, ni - len(fst_pop))
+                                    new_pop = Parallel(n_jobs=8)(delayed(create_new_pop_parallel)(pb) for i in range(ni - len(fst_pop)))
                                     fst_pop = np.append([fst_pop], [new_pop], axis=1)[0]
                                     
                                     fst_pop = order_pop(ET, fst_pop)

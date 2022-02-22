@@ -314,6 +314,9 @@ def create_new_pop(prob_matrix, qtde):
     individuals.append(create_new_individual(prob_matrix))
   return np.array(individuals)
 
+def create_new_pop_parallel(prob_matrix):
+  return np.array(create_new_individual(prob_matrix))
+
 def add_heuristics(ET, CT, n_resources):
   heuristics = []
   heuristics.append(maxmin2(ET, CT, np.zeros(n_resources,dtype=float))[1])
