@@ -1,9 +1,12 @@
 import argparse, sys
 import os
 import time
-import eda_methods
-import individual
-from utils import Utils
+import numpy as np
+from numba import jit
+from utils import get_initial_pop, get_big_pop, mutate, get_fitness, order_pop
+from utils import create_prob_matrix, fill_prob_matrix, create_new_pop, add_heuristics
+from utils import save_to_csv, variable_neighborhood_search
+
 
 parser=argparse.ArgumentParser()
 
@@ -29,6 +32,15 @@ path = [i for i in args.path.split(',')]
 elitism = [int(i) for i in args.elitism.split(',')]
 mutation = [int(i) for i in args.mutation.split(',')]
 
+x = np.arange(100).reshape(10, 10)
+
+@jit(nopython=True)
+def go_fast(a): # Function is compiled and runs in machine code
+    trace = 0.0
+    for i in range(a.shape[0]):
+        trace += np.tanh(a[i, i])
+    return a + trace
+
 
 for j in jobs:
     for m in machines:
@@ -38,5 +50,53 @@ for j in jobs:
                     for p in path:
                         for e in elitism:
                             for mu in mutation:
-                                ET, CT, maquinas = Utils.initialize(p, j, m)
-                                eda_methods.create_first_gen(p, j, m)
+                                array = np.array(open(p).readlines(),dtype=float)
+                                ET = np.reshape(array,(j, m))
+                                CT = ET.copy()
+                                
+                                start = time.time()
+
+                                initial_pop = get_initial_pop()
+                                big_pop = get_big_pop(p)
+
+                                fst_pop = np.append([initial_pop], [big_pop], axis=1)[0]
+
+                                mutate(fst_pop, mu, m)
+
+                                heuristics = add_heuristics(ET, CT, m)
+                                fst_pop = np.append([fst_pop], [heuristics], axis=1)[0]
+                                
+                                fst_pop = order_pop(ET, fst_pop)
+                                fst_pop = fst_pop[:ni]
+
+                                best_makespan = get_fitness(ET, fst_pop[-1])
+
+                                for i in range(ng):
+                                    #print(f'Gen {i}...')
+                                    mutate(fst_pop, mu, m)
+                                    pb = create_prob_matrix(j, m)
+                                    fst_pop = order_pop(ET, fst_pop)
+
+                                    pb_to_matrix = fst_pop.copy()[:int(len(fst_pop)*tm)]
+                                    fill_prob_matrix(pb, pb_to_matrix)
+                                    
+                                    fst_pop = fst_pop[:e]
+                                    
+                                    new_pop = create_new_pop(pb, ni - len(fst_pop))
+                                    fst_pop = np.append([fst_pop], [new_pop], axis=1)[0]
+                                    
+                                    fst_pop = order_pop(ET, fst_pop)
+
+                                    if i == ng - 1:
+                                        individual, fitness = variable_neighborhood_search(ET, fst_pop[-1])
+                                        fst_pop[-1] = individual
+
+                                    if get_fitness(ET, fst_pop[-1]) < best_makespan:
+                                        best_makespan = get_fitness(ET, fst_pop[-1])
+
+                                end = time.time()
+                                elapsed_time = end - start
+                                
+                                print("Elapsed time = %s" % (elapsed_time))
+                                print(f"Best_Makespan for {p} is {best_makespan}...")
+                                save_to_csv(j, m, ni, ng, best_makespan, tm, elapsed_time, 'roulette', e, p, mu)
