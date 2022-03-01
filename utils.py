@@ -6,6 +6,8 @@ import numpy.random as npr
 import pandas as pd
 import os.path as path
 import copy
+from joblib import Parallel, delayed
+
 
 def get_initial_pop():
   pop = json.load(open('populations/population_100.json'))
@@ -26,11 +28,10 @@ def mutate(individuals, mut_prob, num_machines):
       pos = random.randint(0,len(i)-1)
       i[pos] = random.randint(0, num_machines - 1)
 
-
 def order_pop(ET, individuals):
-  makespans = np.zeros(0,dtype=int)
-  for i in individuals:
-    makespans = np.append(makespans, get_fitness(ET, i))
+  makespans = []
+  makespans = Parallel(n_jobs=8)(delayed(get_fitness)(ET, i) for i in individuals)
+  makespans = np.array(makespans)
   inds = makespans.argsort()
   return individuals[inds]
 
@@ -46,8 +47,6 @@ def fill_prob_matrix(prob_matrix, individuals):
 def get_fitness(ET, individual):
     maquinas = np.zeros(ET.shape[1])
     
-    #print("individual:", self.individual)
-
     for i in range(ET.shape[0]):
         
         maquinas[individual[i]] += ET[i][individual[i]]
@@ -61,20 +60,17 @@ def get_min_in_matrix(matrix):
   '''
   return np.unravel_index(matrix.argmin(), matrix.shape)
 
-
 def get_max_in_matrix(matrix):
   '''
   Esta função retorna a linha e coluna do menor elemento da matriz passada por parametro
   '''
   return np.unravel_index(matrix.argmax(), matrix.shape)
 
-
 def get_min_in_array(array):
   '''
   Esta função a posição do menor elemento do array passado por parametro
   '''
   return np.where(array == array.min())[0][0]
-
 
 def get_max_in_array(array):
   '''
@@ -89,24 +85,12 @@ def minmin(ET,CT, maquinas):
   while ET.shape[0] != 0:
     #print("et_shape", ET.shape)
     
-
     min_row, min_col = get_min_in_matrix(CT)
-    '''
-    print("min_row: ", min_row)
-    print("min_col: ", min_col)
-    print("menor elemento:", CT[min_row][min_col])
-    print("CT[min_col]",CT[:5,min_col])
-    print("------------------------\n")
-    '''
-
     maquinas[min_col] += ET[min_row][min_col]
 
     for i in range(ET.shape[0]):
       CT[i][min_col] += ET[min_row][min_col]#maquinas[min_col]
     
-    #print("CT[min_col]",CT[:5,min_col])
-
-    #print("maquinas: ",maquinas)
     for i in range(len(et_copy)):
       if (ET[min_row] == et_copy[i]).all():
         pos = i
@@ -141,14 +125,7 @@ def maxmin2(ET,CT, maquinas):
     for i in range(len(et_copy)):
       if (ET[max_of_mins[0]] == et_copy[i]).all():
         pos = i
-        #print("Ind:", individuo)
-        #print("Pos:", pos)
-        #print("Maq:", min_exec)
-        #input()
-        break
-    
-    
-      
+        break 
 
     individuo[pos] = min_exec
 
@@ -296,7 +273,6 @@ def select_with_choice(population):
   selection_probs = [c/max for c in population]
   return npr.choice(len(population), p=selection_probs)
 
-
 def create_new_individual(prob_matrix):
   new_individual = np.random.randint(0, 0, 0)
   count = 0
@@ -328,7 +304,7 @@ def add_heuristics(ET, CT, n_resources):
 
 def save_to_csv(jobs, machines, numInd, numGen, best_makespan,
   to_matrix, exec_time, selection_method, elitism, i_path, mutation):
-  path_ = 'resultados/eda_new_algorithm.csv'
+  path_ = 'resultados/eda.csv'
   if path.exists(path_):
     df_results = pd.read_csv(path_, header=0, index_col=0)
   else:
@@ -378,8 +354,6 @@ def variable_neighborhood_search(ET, city_tour, max_attempts = 5, neighbourhood_
   count = 0
   solution = copy.deepcopy(city_tour)
   best_solution = copy.deepcopy(city_tour)
-  #print("ET:", ET)
-  #print("Best Sol:", best_solution)
   best_sol_makespan = get_fitness(ET, best_solution)
   while (count < iterations):
     for i in range(0, neighbourhood_size):
@@ -390,11 +364,6 @@ def variable_neighborhood_search(ET, city_tour, max_attempts = 5, neighbourhood_
         if (sol_makespan < best_sol_makespan):
           best_solution = copy.deepcopy(solution) 
           best_sol_makespan = get_fitness(ET,best_solution)
-          #print("-------------------")
-          #print("solution makespan:", sol_makespan)
-          #print("best solution makespan:", best_sol_makespan)
           break
     count = count + 1
-    #print("Iteration = ", count)
-    #print(self.get_fitness(ET, best_solution))
   return best_solution, best_sol_makespan

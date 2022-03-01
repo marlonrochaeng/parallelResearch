@@ -9,7 +9,6 @@ from utils import save_to_csv, variable_neighborhood_search, create_new_pop_para
 from joblib import Parallel, delayed
 
 
-
 parser=argparse.ArgumentParser()
 
 parser.add_argument('--jobs', help='number of jobs')
@@ -20,8 +19,6 @@ parser.add_argument('--numGen', help='number of generations')
 parser.add_argument('--toMatrix', help='percentual da matriz')
 parser.add_argument('--elitism', help='percentual de individuos que passam de Geração')
 parser.add_argument('--mutation', help='percentual de individuos que sofrem mutacao')
-
-
 
 args=parser.parse_args()
 
@@ -34,14 +31,9 @@ path = [i for i in args.path.split(',')]
 elitism = [int(i) for i in args.elitism.split(',')]
 mutation = [int(i) for i in args.mutation.split(',')]
 
-x = np.arange(100).reshape(10, 10)
-
-@jit(nopython=True)
-def go_fast(a): # Function is compiled and runs in machine code
-    trace = 0.0
-    for i in range(a.shape[0]):
-        trace += np.tanh(a[i, i])
-    return a + trace
+big_pop = {}
+for p in path:
+    big_pop[p] = get_big_pop(p)
 
 
 for j in jobs:
@@ -59,9 +51,7 @@ for j in jobs:
                                 start = time.time()
 
                                 initial_pop = get_initial_pop()
-                                big_pop = get_big_pop(p)
-
-                                fst_pop = np.append([initial_pop], [big_pop], axis=1)[0]
+                                fst_pop = np.append([initial_pop], [big_pop[p]], axis=1)[0]
 
                                 mutate(fst_pop, mu, m)
 
@@ -84,7 +74,6 @@ for j in jobs:
                                     
                                     fst_pop = fst_pop[:e]
                                     
-                                    #new_pop = create_new_pop(pb, ni - len(fst_pop))
                                     new_pop = Parallel(n_jobs=8)(delayed(create_new_pop_parallel)(pb) for i in range(ni - len(fst_pop)))
                                     fst_pop = np.append([fst_pop], [new_pop], axis=1)[0]
                                     
